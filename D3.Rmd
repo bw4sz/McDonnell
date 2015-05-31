@@ -1,0 +1,138 @@
+---
+title: "ComplexD3"
+author: "Ben Weinstein"
+date: "May 31, 2015"
+output: html_document
+---
+
+```{r,warning=FALSE,message=FALSE}
+library(networkD3)
+library(igraph)
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+library(knitr)
+opts_chunk$set(echo=F,warnings=F,messages=F)
+```
+
+#Random
+
+```{r, echo=FALSE}
+
+##Simulate Data
+Birds<-letters[1:4]
+Flowers<-1:4
+value<-rbinom(16,1,.5)
+dat<-matrix(nrow=length(Birds),ncol=length(Flowers),data=value)
+rownames(dat)<-Birds
+colnames(dat)<-Flowers
+Links<-melt(dat)
+colnames(Links)<-c("Birds","Flowers","value")
+
+Links$Flowers<-factor(Links$Flowers)
+```
+
+```{r}
+##Simulate properties
+
+Flowers<-levels(Links$Flowers)
+oFlowers<-order(levels(Links$Flowers))-1
+
+Birds<-levels(Links$Birds)
+oBirds<-max(oFlowers) + order(levels(Links$Birds))
+
+Nodes<-data.frame(Name=c(Flowers,Birds),
+                  Node=c(oFlowers,oBirds),
+                  group=c(rep("Flowers",length(Flowers)),rep("Birds",length(Birds))))
+
+#append id to data
+#append to data
+Links$Source<-Nodes[match(Links$Flowers,Nodes$Name),"Node"]
+Links$Target<-Nodes[match(Links$Birds,Nodes$Name),"Node"]
+
+#new script
+n<-networkD3::forceNetwork(Links=Links,NodeID="Name",Nodes=Nodes,Target="Target",Value="value",Source="Source",Group="group",charge = -500,colourScale = "d3.scale.category10()",height=200,width=500) 
+n
+n %>% networkD3::saveNetwork("Random.html",selfcontained=T)
+```
+
+#Modular 
+
+```{r, echo=FALSE}
+##Simulate Data
+
+Birds<-letters[1:4]
+Flowers<-1:4
+value<-c(1,1,0,0,1,1,0,0,0,0,1,1,0,0,1,1)
+dat<-matrix(nrow=length(Birds),ncol=length(Flowers),data=value)
+rownames(dat)<-Birds
+colnames(dat)<-Flowers
+Links<-melt(dat)
+colnames(Links)<-c("Birds","Flowers","value")
+
+Links$Flowers<-factor(Links$Flowers)
+```
+
+```{r}
+##Simulate properties
+
+Flowers<-levels(Links$Flowers)
+oFlowers<-order(levels(Links$Flowers))-1
+
+Birds<-levels(Links$Birds)
+oBirds<-max(oFlowers) + order(levels(Links$Birds))
+
+Nodes<-data.frame(Name=c(Flowers,Birds),
+                  Node=c(oFlowers,oBirds),
+                  group=c(rep("Flowers",length(Flowers)),rep("Birds",length(Birds))))
+
+#append id to data
+#append to data
+Links$Source<-Nodes[match(Links$Flowers,Nodes$Name),"Node"]
+Links$Target<-Nodes[match(Links$Birds,Nodes$Name),"Node"]
+
+#new script
+n<-networkD3::forceNetwork(Links=Links,NodeID="Name",Nodes=Nodes,Target="Target",Value="value",Source="Source",Group="group",charge = -500,colourScale = "d3.scale.category10()",height=200) 
+n
+n %>% networkD3::saveNetwork("Modular.html",selfcontained=T)
+```
+
+
+#Nested
+
+```{r, echo=FALSE}
+##Simulate Data
+Birds<-letters[1:4]
+Flowers<-1:4
+value<-c(rep(1,4),rep(1,3),0,rep(1,2),0,0,1,0,0,0)
+dat<-matrix(nrow=length(Birds),ncol=length(Flowers),data=value)
+rownames(dat)<-Birds
+colnames(dat)<-Flowers
+Links<-melt(dat)
+colnames(Links)<-c("Birds","Flowers","value")
+
+Links$Flowers<-factor(Links$Flowers)
+```
+
+```{r}
+##Simulate data
+Flowers<-levels(Links$Flowers)
+oFlowers<-order(levels(Links$Flowers))-1
+
+Birds<-levels(Links$Birds)
+oBirds<-max(oFlowers) + order(levels(Links$Birds))
+
+Nodes<-data.frame(Name=c(Flowers,Birds),
+                  Node=c(oFlowers,oBirds),
+                  group=c(rep("Flowers",length(Flowers)),rep("Birds",length(Birds))))
+
+#append id to data
+#append to data
+Links$Source<-Nodes[match(Links$Flowers,Nodes$Name),"Node"]
+Links$Target<-Nodes[match(Links$Birds,Nodes$Name),"Node"]
+
+#new script
+n<-networkD3::forceNetwork(Links=Links,NodeID="Name",Nodes=Nodes,Target="Target",Value="value",Source="Source",Group="group",charge = -500,colourScale = "d3.scale.category10()",height=200) 
+n
+n %>% networkD3::saveNetwork("Nested.html",selfcontained=T)
+```
